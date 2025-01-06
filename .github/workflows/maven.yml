@@ -42,6 +42,8 @@ jobs:
         run: |
            docker build -t maven-standalone-application:latest .
            docker run -d --name sravani -p 7070:7070 maven-standalone-application:latest
+           docker ps
+           
 
 
 
