@@ -65,7 +65,8 @@ jobs:
 
       # Deploy the application in Kubernetes cluster
       - name: Deploy to Kubernetes
-        run: kubectl apply -f deployment.yaml
+        run: | 
+          kubectl apply -f maven-standalone-application/deployment.yaml
 
 
 
