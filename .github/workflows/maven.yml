@@ -50,6 +50,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.SRAVANIISECRETKEY }}
           aws-region: ap-south-1 
 
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.21.3/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # Step 4: Update kubeconfig to access your EKS cluster
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name demo --region ap-south-1 # Replace with your cluster name and region
+
+    
+
       # Step 3: Install kubectl and configure kubeconfig for AWS EKS
       - name: Set up kubectl
         uses: aws-actions/amazon-eks-action@v1
