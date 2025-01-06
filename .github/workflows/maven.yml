@@ -32,6 +32,14 @@ jobs:
       # Optionally, run tests
       - name: Run the maven
         run: mvn clean package
+        
+        # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      # creating the docker image
+      - name: docker image creation
+        run: docker build -t maven-standalone-application:latest .
 
 
 
