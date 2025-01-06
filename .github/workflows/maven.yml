@@ -43,6 +43,20 @@ jobs:
            docker build -t maven-standalone-application:latest .
            docker run -d --name sravani -p 7070:7070 maven-standalone-application:latest
            docker ps
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.SRAVANIIACESSKEY}}
+          aws-secret-access-key: ${{ secrets.SRAVANIISECRETKEY }}
+          aws-region: ap-south-1 
+
+      # Step 3: Install kubectl and configure kubeconfig for AWS EKS
+      - name: Set up kubectl
+        uses: aws-actions/amazon-eks-action@v1
+        with:
+          cluster-name: demo
+          region: ap-south-1# Replace with your region
+    
       # deploy the application in kubernetes cluster.
       - name: kubernetes
         run:  kubectl apply -f deployment.yaml
