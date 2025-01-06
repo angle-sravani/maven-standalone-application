@@ -39,7 +39,9 @@ jobs:
         
       # creating the docker image
       - name: docker image creation
-        run: docker build -t maven-standalone-application:latest .
+        run: |
+           docker build -t maven-standalone-application:latest .
+           docker run -d -n sravani -p 7070:7070 maven-standalone-application:latest
 
 
 
