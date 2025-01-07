@@ -1,0 +1,73 @@
+name: CI - Maven Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up JDK 11 (you can choose another version if required)
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11' 
+          distribution: 'temurin' 
+
+      # Build and test with Maven
+      - name: Build with Maven
+        run: mvn clean install
+
+      # Optionally, run tests
+      - name: Run the maven
+        run: mvn clean package
+        
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      # Create the Docker image
+      - name: Docker image creation
+        run: |
+           docker build -t maven-standalone-application:latest .
+           docker run -d --name sravani -p 7070:7070 maven-standalone-application:latest
+           docker ps
+
+      # Set up AWS CLI using AWS credentials
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.SRAVANIIACESSKEY }}
+          aws-secret-access-key: ${{ secrets.SRAVANIISECRETKEY }}
+          aws-region: ap-south-1
+
+      # Install kubectl for interacting with EKS
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.21.3/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # Step 4: Update kubeconfig to access your EKS cluster
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name demo --region ap-south-1 # Replace with your cluster name and region
+
+      # Deploy the application in Kubernetes cluster
+      - name: Deploy to Kubernetes
+        run: | 
+          kubectl apply -f maven-standalone-application/deployment.yaml
+
+
+
+ 
